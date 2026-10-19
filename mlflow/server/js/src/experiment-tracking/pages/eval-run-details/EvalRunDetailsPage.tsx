@@ -25,6 +25,8 @@ import { TracesV4PageWrapper } from '../../components/experiment-page/components
 import { useEvalRunProgress } from './useEvalRunProgress';
 import { EvalRunTracesSidebar } from './EvalRunTracesSidebar';
 import { EvalRunTracesV4Table } from './EvalRunTracesV4Table';
+import { EvalRunCompareView } from './EvalRunCompareView';
+import { useEvalRunsCompareMode } from '../../components/evaluations/hooks/useEvalRunsCompareMode';
 import {
   useExperimentPageRevampContext,
   useSetExperimentBreadcrumbTitle,
@@ -80,6 +82,7 @@ const EvalRunDetailsPageContent = ({ experimentId, runUuid }: { experimentId: st
 
   // Runs that logged their results as trace table artifacts keep the artifact-backed results view.
   const traceTablesLoggedInRun = useRunLoggedTraceTableArtifacts(runTags);
+  const { compareMode, compareRuns } = useEvalRunsCompareMode();
 
   if (isNotFound) {
     return <RunNotFoundView runId={runUuid} />;
@@ -191,10 +194,14 @@ const EvalRunDetailsPageContent = ({ experimentId, runUuid }: { experimentId: st
         </div>
       )}
 
-      <div css={{ display: 'flex', flex: 1, minHeight: 0, minWidth: 0 }}>
-        <div css={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{tracesTable}</div>
-        <EvalRunTracesSidebar key={runUuid} experimentId={experimentId} runUuid={runUuid} />
-      </div>
+      {compareMode && shouldEnableNewEvalRunsUi() ? (
+        <EvalRunCompareView experimentId={experimentId} baselineRunUuid={runUuid} compareRunUuids={compareRuns} />
+      ) : (
+        <div css={{ display: 'flex', flex: 1, minHeight: 0, minWidth: 0 }}>
+          <div css={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{tracesTable}</div>
+          <EvalRunTracesSidebar key={runUuid} experimentId={experimentId} runUuid={runUuid} runName={runName} />
+        </div>
+      )}
     </div>
   );
 };
