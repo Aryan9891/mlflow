@@ -70,6 +70,8 @@ export interface TracesV4ToolbarParams {
   hideFilterButton?: boolean;
   /** Traces on the current page; with the new evaluation runs UI the filter editor suggests their values. */
   traces?: ModelTraceInfoV3[];
+  /** Offer the session grouping toggle (default true, when session grouping is enabled). */
+  showSessionGrouping?: boolean;
 }
 
 // Column-selector options: static componentIds (lint requires static ids) + localized labels. Adding
@@ -168,6 +170,7 @@ export const useTracesV4ToolbarSlots = ({
   savedViewsButton,
   hideFilterButton = false,
   traces,
+  showSessionGrouping = true,
   isGroupedBySession,
   onToggleSessionGrouping,
   columnOrder,
@@ -336,7 +339,7 @@ export const useTracesV4ToolbarSlots = ({
             activeCount={activeFilterCount}
           />
         )}
-        {shouldEnableSessionGrouping() && (
+        {showSessionGrouping && shouldEnableSessionGrouping() && (
           <Tooltip
             componentId="mlflow.traces-v4.group-by-session.tooltip"
             content={intl.formatMessage({
